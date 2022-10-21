@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import whim.project.students.Student;
+import whim.project.utils.ErrorResponse;
 
 @RestController
 @RequestMapping("/api")
@@ -33,18 +36,20 @@ public class GroupController {
 	}
 
 	@Operation(description = "Получить группу по id")
+	@ApiResponse(responseCode = "200", description = "ok")
+	@ApiResponse(responseCode = "404", description = "group not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	@RequestMapping(path = "/groups/{id}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
 	public ResponseEntity<Group> getByID(@PathVariable("id") long id) {
 		var group = groupService.findById(id);
 		if (!group.isEmpty())
 			return new ResponseEntity<Group>(group.get(), HttpStatus.OK);
 		else
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("group with id=%s not found", id));
 	}
 
-	@Operation(description = "Получить всех студентов из группы")
+	@Operation(description = "Получить всех студентов из группы", tags = "Студент")
 	@ApiResponse(responseCode = "200", description = "ok")
-	@ApiResponse(responseCode = "404", description = "group not found")
+	@ApiResponse(responseCode = "404", description = "group not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	@RequestMapping(path = "/groups/{id}/students", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
 	public ResponseEntity<Set<Student>> getAllStudentsFromGroup(@PathVariable("id") long id) {
 		var group = groupService.findById(id);
