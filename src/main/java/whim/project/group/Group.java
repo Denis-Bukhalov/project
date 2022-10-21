@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import whim.project.students.Student;
+import whim.project.subjects.Subject;
 
 @Entity
 @Table(name = "groups")
@@ -42,4 +43,9 @@ public class Group {
 	@JsonIgnore
 	private Set<Student> students;
 
+	@OneToMany(orphanRemoval = true, targetEntity = Subject.class)
+	@JoinColumn(name = "group_id")
+	@Schema(hidden = true)
+	@JsonIgnore
+	private Set<Subject> subjects;
 }

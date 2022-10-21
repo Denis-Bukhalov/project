@@ -1,6 +1,7 @@
 package whim.project.lecturer;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,5 +13,9 @@ public class LecturerService {
 
 	public List<Lecturer> getAll() {
 		return lecturerRepository.findAll();
+	}
+
+	public Optional<Lecturer> findById(long id) {
+		return lecturerRepository.findById(id);
 	}
 }

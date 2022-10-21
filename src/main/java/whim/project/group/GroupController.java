@@ -1,5 +1,6 @@
 package whim.project.group;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import whim.project.students.Student;
+import whim.project.subjects.Subject;
 import whim.project.utils.ErrorResponse;
 
 @RestController
@@ -51,12 +53,23 @@ public class GroupController {
 	@ApiResponse(responseCode = "200", description = "ok")
 	@ApiResponse(responseCode = "404", description = "group not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	@RequestMapping(path = "/groups/{id}/students", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public ResponseEntity<Set<Student>> getAllStudentsFromGroup(@PathVariable("id") long id) {
+	public Set<Student> getAllStudentsFromGroup(@PathVariable("id") long id) {
 		var group = groupService.findById(id);
 		if (!group.isEmpty())
-			return new ResponseEntity<Set<Student>>(group.get().getStudents(), HttpStatus.OK);
+			return new HashSet<Student>(group.get().getStudents());
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("group with id=%s not found", id));
 	}
 
+	@Operation(description = "Получить все предметы группы студентов", tags = "Предмет")
+	@ApiResponse(responseCode = "200", description = "ok")
+	@ApiResponse(responseCode = "404", description = "group not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+	@RequestMapping(path = "/groups/{id}/subjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Set<Subject> getAllSubjectsOfGroup(@PathVariable("id") long id) {
+		var group = groupService.findById(id);
+		if (!group.isEmpty())
+			return new HashSet<>(group.get().getSubjects());
+		else
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("group with id=%s not found", id));
+	}
 }
