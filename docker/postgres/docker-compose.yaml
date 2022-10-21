@@ -1,10 +1,11 @@
 version: "3.9"
 services:
   postgres:
+    container_name: "POSTGRES_DB"
     image: postgres:13.3
     environment:
-      POSTGRES_DB: "main"
+      POSTGRES_DB: "whimdb"
       POSTGRES_USER: "whim"
-      POSTGRES_PASSWORD: "helloworld"
+      POSTGRES_PASSWORD: "hello"
     ports:
       - "5432:5432"
