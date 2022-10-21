@@ -7,7 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import whim.project.lecturer.Lecturer;
+import whim.project.tasks.Task;
 
 @Entity
 @Table(name = "subjects")
@@ -39,4 +42,11 @@ public class Subject {
 	@Schema(hidden = true)
 	@JsonIgnore
 	private Set<Lecturer> lecturers;
+
+	@OneToMany(orphanRemoval = true, targetEntity = Task.class)
+	@JoinColumn(name = "subject_id")
+	@JsonIgnore
+	@Schema(hidden = true)
+	private Set<Task> tasks;
+
 }
