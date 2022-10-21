@@ -25,15 +25,15 @@ public class Group {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Schema(description = "уникальный идентификатор группы")
+	@Schema(description = "уникальный идентификатор группы", example = "1")
 	private Long id;
 
 	@Column(name = "short_name", unique = true, nullable = false, length = 8)
-	@Schema(description = "Короткая запись имени группы", nullable = false, maxLength = 8)
+	@Schema(description = "Короткая запись имени группы", nullable = false, maxLength = 8, example = "МО-201")
 	private String shortName;
 
 	@Column(name = "full_name", nullable = true, length = 50)
-	@Schema(description = "Полная запись имени группы", nullable = true, maxLength = 50)
+	@Schema(description = "Полная запись имени группы", nullable = true, maxLength = 50, example = "Математическое обеспечение и администрирование информационных систем")
 	private String fullName;
 
 	@OneToMany(orphanRemoval = true, targetEntity = Student.class)
