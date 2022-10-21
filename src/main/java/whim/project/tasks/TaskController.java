@@ -1,9 +1,6 @@
 package whim.project.tasks;
 
 import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
-import whim.project.subjects.Subject;
 import whim.project.subjects.SubjectService;
+import whim.project.utils.ErrorResponse;
 
 @Data
 class TaskDTO {
 	private String description;
 	private Long subjectId;
+}
+
+@Data
+class TaskDTOupdate {
+	private String description;
 }
 
 // TODO: multithreading: LOL HEH MDA
@@ -50,10 +55,12 @@ public class TaskController {
 	}
 
 	@RequestMapping(path = "tasks", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(description = "создать задание")
+	@ApiResponse(responseCode = "200", description = "ok")
+	@ApiResponse(responseCode = "404", description = "subject with id in request body not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Task> createTask(@RequestBody TaskDTO task) {
 		var subject_ = subjectService.findById(task.getSubjectId());
 		if (subject_.isPresent()) {
-			// var subject = subject_.get();
 			return new ResponseEntity<>(taskService.saveTask(new Task(task.getDescription(), task.getSubjectId())),
 					HttpStatus.OK);
 		} else {
@@ -63,7 +70,10 @@ public class TaskController {
 	}
 
 	@RequestMapping(path = "tasks/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Task> updateTask(@PathVariable("id") Long id, @RequestBody TaskDTO task) {
+	@Operation(description = "обновляет существующее задание")
+	@ApiResponse(responseCode = "200", description = "ok")
+	@ApiResponse(responseCode = "404", description = "task not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+	public ResponseEntity<Task> updateTask(@PathVariable("id") Long id, @RequestBody TaskDTOupdate task) {
 		var optionalTask = taskService.findById(id);
 
 		if (optionalTask.isPresent()) {
@@ -72,15 +82,18 @@ public class TaskController {
 					taskService.saveTask(new Task(task_.getId(), task.getDescription(), task_.getSubjectId())),
 					HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("task with id=%s not found", id));
 		}
 	}
 
 	@RequestMapping(path = "tasks/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(description = "удаляет задание")
+	@ApiResponse(responseCode = "204", description = "всё удачно удалено")
+	@ApiResponse(responseCode = "404", description = "task not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Void> createTask(@PathParam("id") long id) {
 		var rows = taskService.deleteTask(id);
 		if (rows != 0) {
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("task with id=%s not found", id));
 		}
