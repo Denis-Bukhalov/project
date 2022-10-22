@@ -2,6 +2,7 @@ package whim.project.group;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -43,8 +44,8 @@ public class Group {
 	@JsonIgnore
 	private Set<Student> students;
 
-	@OneToMany(orphanRemoval = true, targetEntity = Subject.class)
-	@JoinColumn(name = "group_id")
+	@OneToMany(orphanRemoval = true, targetEntity = Subject.class, cascade = CascadeType.ALL)
+	@JoinColumn(name = "group_id", nullable = false)
 	@Schema(hidden = true)
 	@JsonIgnore
 	private Set<Subject> subjects;
