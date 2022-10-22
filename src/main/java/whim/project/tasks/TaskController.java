@@ -1,5 +1,6 @@
 package whim.project.tasks;
 
+import java.util.HashSet;
 import java.util.List;
 import javax.websocket.server.PathParam;
 
@@ -79,7 +80,8 @@ public class TaskController {
 		if (optionalTask.isPresent()) {
 			var task_ = optionalTask.get();
 			return new ResponseEntity<>(
-					taskService.saveTask(new Task(task_.getId(), task.getDescription(), task_.getSubjectId())),
+					taskService.saveTask(
+							new Task(task_.getId(), task.getDescription(), task_.getSubjectId(), new HashSet<>())),
 					HttpStatus.OK);
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("task with id=%s not found", id));
