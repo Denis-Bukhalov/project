@@ -115,4 +115,20 @@ public class MarkController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 					String.format("mark with id=%s not found", id));
 	}
+
+	@RequestMapping(path = "marks/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(description = "получить оценку по идентификатору")
+	@ApiResponse(responseCode = "200", description = "ok")
+	@ApiResponse(responseCode = "404", description = "mark not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+	public ResponseEntity<Mark> getTaskById(@PathVariable("id") Long id) {
+		var optionalMark = markService.getMarkById(id);
+
+		if (optionalMark.isPresent()) {
+			return new ResponseEntity<>(
+					optionalMark.get(),
+					HttpStatus.OK);
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("mark with id=%s not found", id));
+		}
+	}
 }

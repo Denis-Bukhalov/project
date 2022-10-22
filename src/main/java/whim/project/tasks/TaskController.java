@@ -101,4 +101,20 @@ public class TaskController {
 		}
 	}
 
+	@RequestMapping(path = "tasks/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(description = "получить задание по идентификатору")
+	@ApiResponse(responseCode = "200", description = "ok")
+	@ApiResponse(responseCode = "404", description = "task not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+	public ResponseEntity<Task> getTaskById(@PathVariable("id") Long id) {
+		var optionalTask = taskService.findById(id);
+
+		if (optionalTask.isPresent()) {
+			return new ResponseEntity<>(
+					optionalTask.get(),
+					HttpStatus.OK);
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("task with id=%s not found", id));
+		}
+	}
+
 }

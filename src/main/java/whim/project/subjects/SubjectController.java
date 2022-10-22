@@ -6,6 +6,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,6 +56,18 @@ public class SubjectController {
 		var lecturer = subjectService.findById(id);
 		if (lecturer.isPresent())
 			return lecturer.get().getTasks();
+		else
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("subject with id=%s not found", id));
+	}
+
+	@Operation(description = "Получить предмет по id")
+	@ApiResponse(responseCode = "200", description = "ok")
+	@ApiResponse(responseCode = "404", description = "subject not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+	@RequestMapping(path = "/subjects/{id}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public ResponseEntity<Subject> getByID(@PathVariable("id") long id) {
+		var optionalSubject = subjectService.findById(id);
+		if (optionalSubject.isPresent())
+			return new ResponseEntity<>(optionalSubject.get(), HttpStatus.OK);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("subject with id=%s not found", id));
 	}
