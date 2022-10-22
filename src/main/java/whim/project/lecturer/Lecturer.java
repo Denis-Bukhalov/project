@@ -38,7 +38,7 @@ public class Lecturer {
 	@Schema(description = "уникальный идентификатор преподавателя", example = "1")
 	private Long id;
 
-	@Column(name = "fist_name", nullable = false, length = 32)
+	@Column(name = "first_name", nullable = false, length = 32)
 	@Schema(description = "Имя преподавателя", nullable = false, maxLength = 32, example = "Иван")
 	private String firstName;
 
