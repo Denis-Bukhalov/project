@@ -2,4 +2,5 @@ FROM gradle:6.9.3-jdk17-alpine
 COPY . /app
 EXPOSE 8080
 WORKDIR /app
+RUN ["chmod", "+x", "./gradlew"]
 CMD ./gradlew bootRun
