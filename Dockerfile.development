@@ -3,4 +3,4 @@ COPY . /app
 EXPOSE 8080
 WORKDIR /app
 RUN ["chmod", "+x", "./gradlew"]
-CMD ./gradlew bootRun
+CMD gradle bootRun
