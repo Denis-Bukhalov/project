@@ -44,6 +44,11 @@ dependencies {
 	// some vscode feature require this
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+	implementation 'org.keycloak.bom:keycloak-adapter-bom:20.0.1'
+	implementation 'org.keycloak:keycloak-spring-boot-starter:20.0.1'
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {

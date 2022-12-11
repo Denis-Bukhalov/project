@@ -1,0 +1,16 @@
+version: "3.2"
+
+services:
+  keycloak:
+      image: jboss/keycloak
+      container_name: keycloak
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: whimdb
+        DB_USER: whim
+        DB_PASSWORD: hello
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: hello
+      ports:
+        - "8484:8080"
