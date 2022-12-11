@@ -1,4 +1,4 @@
-package whim.project.tasks;
+package whim.project.task;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,24 +8,23 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TaskService {
-
 	@Autowired
 	private TaskRepository taskRepository;
 
-	public List<Task> getAll() {
+	public List<Task> getAllTasks() {
 		return taskRepository.findAll();
 	}
 
-	public Optional<Task> findById(long id) {
+	public Optional<Task> getTaskById(Long id) {
 		return taskRepository.findById(id);
 	}
 
-	public Task saveTask(Task task) {
-		return taskRepository.save(task);
+	public Task saveTask(Task Task) {
+		return taskRepository.save(Task);
 	}
 
-	public int deleteTask(long id) {
-		return taskRepository.deleteTaskById(id);
+	public List<Task> removeById(Long id) {
+		return taskRepository.removeById(id);
 	}
 
 }

@@ -44,9 +44,9 @@ public class Mark implements Serializable {
 	private Long taskId;
 
 	@Column(name = "value")
-	private Float value;
+	private Double value;
 
-	public Mark(Long studentId, Long taskId, Float value) {
+	public Mark(Long studentId, Long taskId, Double value) {
 		this.studentId = studentId;
 		this.taskId = taskId;
 		this.value = value;

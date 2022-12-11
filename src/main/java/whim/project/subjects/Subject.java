@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import whim.project.lecturer.Lecturer;
-import whim.project.tasks.Task;
+import whim.project.task_groups.TaskGroup;
 
 @Entity
 @Table(name = "subjects")
@@ -30,9 +30,9 @@ public class Subject {
 	@Schema(description = "уникальный идентификатор группы", example = "1")
 	private Long id;
 
-	@Column(name = "name", nullable = false, length = 64)
+	@Column(name = "title", nullable = false, length = 64)
 	@Schema(description = "Название предмета", nullable = false, maxLength = 64, example = "Математический анализ")
-	private String name;
+	private String title;
 
 	@Column(name = "group_id", nullable = false, updatable = false, insertable = false)
 	@Schema(description = "Идентификатор группы которая обучается этому предмету", nullable = false, example = "1")
@@ -43,10 +43,10 @@ public class Subject {
 	@JsonIgnore
 	private Set<Lecturer> lecturers;
 
-	@OneToMany(orphanRemoval = true, targetEntity = Task.class)
+	@OneToMany(orphanRemoval = true, targetEntity = TaskGroup.class)
 	@JoinColumn(name = "subject_id")
 	@JsonIgnore
 	@Schema(hidden = true)
-	private Set<Task> tasks;
+	private Set<TaskGroup> taskGroups;
 
 }

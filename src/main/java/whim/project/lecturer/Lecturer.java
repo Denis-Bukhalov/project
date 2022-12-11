@@ -46,6 +46,10 @@ public class Lecturer {
 	@Schema(description = "Фамилия преподавателя", nullable = false, maxLength = 32, example = "Иванов")
 	private String secondName;
 
+	@Column(name = "last_name", nullable = false, length = 32)
+	@Schema(description = "Отчество преподавателя", nullable = false, maxLength = 32, example = "Иванов")
+	private String lastName;
+
 	@ManyToMany
 	@JoinTable(name = "lecturer_subjects", joinColumns = @JoinColumn(name = "lecturer_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
 	@Schema(hidden = true)

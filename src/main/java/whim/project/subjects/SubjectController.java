@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import whim.project.lecturer.Lecturer;
-import whim.project.tasks.Task;
+import whim.project.task_groups.TaskGroup;
 import whim.project.utils.ErrorResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -48,14 +48,14 @@ public class SubjectController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("subject with id=%s not found", id));
 	}
 
-	@Operation(description = "Получить все предметы данного предмета", tags = "Задание")
+	@Operation(description = "Получить все группы заданий данного предмета", tags = "Группа заданий")
 	@ApiResponse(responseCode = "200", description = "ok")
 	@ApiResponse(responseCode = "404", description = "subject not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-	@RequestMapping(path = "subjects/{id}/tasks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Set<Task> getTasksOfSubject(@PathVariable("id") long id) {
-		var lecturer = subjectService.findById(id);
-		if (lecturer.isPresent())
-			return lecturer.get().getTasks();
+	@RequestMapping(path = "subjects/{id}/tasks_groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Set<TaskGroup> getTasksOfSubject(@PathVariable("id") long id) {
+		var subject = subjectService.findById(id);
+		if (subject.isPresent())
+			return subject.get().getTaskGroups();
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("subject with id=%s not found", id));
 	}

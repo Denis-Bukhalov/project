@@ -3,6 +3,9 @@ package whim.project.marks;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,20 +25,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import whim.project.students.Student;
 import whim.project.students.StudentService;
-import whim.project.tasks.Task;
-import whim.project.tasks.TaskService;
+import whim.project.task.Task;
+import whim.project.task.TaskService;
 import whim.project.utils.ErrorResponse;
 
 @Data
 class MarkDTO {
-	private long studentId;
-	private long taskId;
-	private float value;
+	@NotNull
+	private Long studentId;
+	@NotNull
+	private Long taskId;
+	private Double value = 0.0;
 }
 
 @Data
 class MarkDTOupdate {
-	private float value;
+	@NotNull
+	private Double value;
 }
 
 @RestController
@@ -62,35 +68,37 @@ public class MarkController {
 	@Operation(description = "Создать оценку")
 	@ApiResponse(responseCode = "200", description = "ok")
 	@ApiResponse(responseCode = "404", description = "task or student with id in request body not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-	@ApiResponse(responseCode = "409", description = "оценка этого студента по этому заданию уже существует", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-	public ResponseEntity<Mark> createMark(@RequestBody() MarkDTO markDTO) {
-		Optional<Student> oStudent = studentService.getStudentById(markDTO.getStudentId());
-		Optional<Task> oTask = taskService.findById(markDTO.getTaskId());
+	@ApiResponse(responseCode = "404", description = "оценка этого студента по этому заданию уже существует", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+	public ResponseEntity<Mark> createMark(@Valid @RequestBody() MarkDTO markDTO) {
+		Optional<Student> optStudent = studentService.getStudentById(markDTO.getStudentId());
+		Optional<Task> optTask = taskService.getTaskById(markDTO.getTaskId());
 
-		if (oStudent.isPresent()) {
-			if (oTask.isPresent()) {
-				var task = oTask.get();
-				var student = oStudent.get();
-				if (!markService.MarkExistByStudentIdAndTaskId(student.getId(), task.getId())) {
-					return new ResponseEntity<>(markService.saveMark(new Mark(
-							student.getId(), task.getId(), markDTO.getValue())), HttpStatus.OK);
-				} else
-					throw new ResponseStatusException(HttpStatus.CONFLICT,
-							String.format("mark of this student and task already exist", markDTO.getTaskId()));
-			} else
+		if (optStudent.isPresent() && optTask.isPresent()) {
+			var task = optTask.get();
+			var student = optStudent.get();
+			if (!markService.MarkExistByStudentIdAndTaskId(student.getId(), task.getId())) {
+				return new ResponseEntity<>(markService.saveMark(new Mark(
+						student.getId(), task.getId(), markDTO.getValue())), HttpStatus.OK);
+			} else {
+				throw new ResponseStatusException(HttpStatus.CONFLICT,
+						String.format("mark of this student and task already exist", markDTO.getTaskId()));
+			}
+		} else {
+			if (optTask.isEmpty())
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 						String.format("task with id=%s not found", markDTO.getTaskId()));
-		} else
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-					String.format("student with id=%s not found", markDTO.getStudentId()));
-
+			if (optStudent.isEmpty())
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+						String.format("student with id=%s not found", markDTO.getStudentId()));
+		}
+		return null; // unreachable
 	}
 
 	@RequestMapping(path = "marks/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(description = "изменить существующую оценку")
 	@ApiResponse(responseCode = "200", description = "ok")
 	@ApiResponse(responseCode = "404", description = "mark not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-	public ResponseEntity<Mark> updateMark(@RequestBody MarkDTOupdate markDTO, @PathVariable("id") long id) {
+	public ResponseEntity<Mark> updateMark(@Valid @RequestBody MarkDTOupdate markDTO, @PathVariable("id") long id) {
 		var OMark = markService.getMarkById(id);
 		if (OMark.isPresent()) {
 			var mark = OMark.get();
@@ -106,11 +114,9 @@ public class MarkController {
 	@ApiResponse(responseCode = "200", description = "ok")
 	@ApiResponse(responseCode = "404", description = "mark not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	public ResponseEntity<Mark> deleteMark(@PathVariable("id") long id) {
-		var OMark = markService.getMarkById(id);
-		if (OMark.isPresent()) {
-			var mark = OMark.get();
-			markService.deleteMark(mark);
-			return new ResponseEntity<>(mark, HttpStatus.OK);
+		List<Mark> marks = markService.removeMark(id);
+		if (!marks.isEmpty()) {
+			return new ResponseEntity<>(marks.get(0), HttpStatus.OK);
 		} else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 					String.format("mark with id=%s not found", id));

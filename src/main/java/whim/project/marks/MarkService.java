@@ -23,6 +23,10 @@ public class MarkService {
 		markRepository.delete(mark);
 	}
 
+	public List<Mark> removeMark(Long id) {
+		return markRepository.removeById(id);
+	}
+
 	public Mark saveMark(Mark mark) {
 		return markRepository.save(mark);
 	}
