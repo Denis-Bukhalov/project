@@ -117,7 +117,7 @@ public class TaskGroupController {
 	@RequestMapping(path = "task_groups/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(description = "удаляет групу заданий")
 	@ApiResponse(responseCode = "404", description = "task not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-	public ResponseEntity<TaskGroup> removeTaskGroup(@PathParam("id") long id) {
+	public ResponseEntity<TaskGroup> removeTaskGroup(@PathVariable("id") long id) {
 		List<TaskGroup> taskGroups = taskGroupService.removeById(id);
 
 		if (!taskGroups.isEmpty()) {

@@ -78,7 +78,7 @@ public class TaskController {
 	@Operation(description = "получить задание по id")
 	@ApiResponse(responseCode = "404", description = "task not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	@RequestMapping(path = "tasks/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Task> getTaskByID(@PathParam("id") Long id) {
+	public ResponseEntity<Task> getTaskByID(@PathVariable("id") Long id) {
 		var optTask = taskService.getTaskById(id);
 
 		if (optTask.isPresent()) {
@@ -94,7 +94,7 @@ public class TaskController {
 	@Operation(description = "получить все оценки по заданию")
 	@ApiResponse(responseCode = "404", description = "task not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 	@RequestMapping(path = "tasks/{id}/marks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Set<Mark>> getMarkFromTaskByID(@PathParam("id") Long id) {
+	public ResponseEntity<Set<Mark>> getMarkFromTaskByID(@PathVariable("id") Long id) {
 		var optTask = taskService.getTaskById(id);
 
 		if (optTask.isPresent()) {
@@ -108,7 +108,7 @@ public class TaskController {
 	}
 
 	@RequestMapping(path = "tasks/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Task> removeTask(@PathParam("id") Long id) {
+	public ResponseEntity<Task> removeTask(@PathVariable("id") Long id) {
 		var tasks = taskService.removeById(id);
 
 		if (!tasks.isEmpty()) {
